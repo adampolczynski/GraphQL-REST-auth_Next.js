@@ -1,0 +1,27 @@
+services:
+  next:
+    build:
+      context: ./next/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./next/:/usr/src/app
+    ports:
+      - '3000:3000'
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/:/usr/src/app
+    ports:
+      - '4000:4000'
+  db:
+    image: mongo
+    restart: always
+    volumes:
+      - /data/db/:/data/db/
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: test
+    ports:
+      - '27017:27017'
