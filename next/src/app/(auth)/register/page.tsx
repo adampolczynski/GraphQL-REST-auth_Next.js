@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
-import { AuthFormCard, MainContainer } from '@/src/components'
+import { AuthFormCard, MainContainer } from '@/app/components'
 
 export default () => {
   const router = useRouter()
@@ -53,16 +53,8 @@ export default () => {
     }
   }
 
-  const handleKeyPress = (e: Event) => {
-    if (e.key === 'Enter') {
-      submit()
-    }
-  }
-
   useEffect(() => {
     setError('')
-    document.addEventListener('keydown', handleKeyPress)
-    return () => document.removeEventListener('keydown', handleKeyPress)
   }, [email, password, repeatPassword])
 
   return (

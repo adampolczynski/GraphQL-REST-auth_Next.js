@@ -1,5 +1,6 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react'
-import { LoginCredentials, RESTLoginResponse, User } from '../types'
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from 'react'
+import { LoginCredentials, RESTLoginResponse, User } from '@/types'
+import localForage from 'localforage'
 
 const AuthContext = createContext<{
   authData?: User
@@ -67,6 +68,8 @@ const useProvideAuth = () => {
       } else {
         setAuthData({ _id, email })
         setAuthToken(token)
+        await localForage.setItem('authData', { _id, email })
+        await localForage.setItem('token', token)
         return Promise.resolve({ _id, email, token })
       }
     } catch (error) {
@@ -76,10 +79,21 @@ const useProvideAuth = () => {
     }
   }
 
-  const signOut = () => {
+  const signOut = async () => {
     setAuthData(undefined)
     setAuthToken(undefined)
+    await localForage.removeItem('authData')
+    await localForage.removeItem('token')
   }
+
+  useEffect(() => {
+    localForage.getItem<string | undefined>('token').then((storedToken) => {
+      setAuthToken(storedToken || undefined)
+      localForage.getItem<User | undefined>('authData').then((storedAuthData) => {
+        setAuthData(storedAuthData || undefined)
+      })
+    })
+  }, [])
 
   return {
     authData,

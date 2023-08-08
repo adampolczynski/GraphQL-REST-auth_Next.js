@@ -5,13 +5,12 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useGraphQLAuth } from '../context/apollo-auth'
 import { useRESTAuth } from '../context/auth'
-import { User } from '../types'
+import { User } from '@/types'
 
 const ROUTES = {
   Main: '/',
   Login: '/login',
   Register: '/register',
-  'The board': '/dashboard',
 }
 
 export const Navbar = () => {
@@ -41,7 +40,7 @@ export const Navbar = () => {
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
         <a className="navbar-brand" style={{ paddingLeft: '2rem' }}>
-          Canban board
+          GraphQL & REST auth
           <span
             style={{
               fontSize: 10,
@@ -49,7 +48,7 @@ export const Navbar = () => {
               marginLeft: '0.3rem',
             }}
           >
-            using Next/GraphQL/MongoDB/Fastify
+            using Next.js/MongoDB/Fastify
           </span>
           <p style={{ fontSize: 10 }}>by Adam Polczynski</p>
         </a>

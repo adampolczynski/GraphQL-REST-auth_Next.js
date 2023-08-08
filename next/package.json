@@ -16,8 +16,10 @@
     "bootstrap": "^5.3.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
+    "localforage": "^1.10.0",
     "next": "13.4.12",
     "react": "18.2.0",
+    "react-bootstrap": "^2.8.0",
     "react-dom": "18.2.0",
     "typescript": "5.1.6"
   }

@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
-import { AuthFormCard, MainContainer } from '@/src/components'
-import { useRESTAuth } from '@/src/context/auth'
-import { useGraphQLAuth } from '@/src/context/apollo-auth'
+import { AuthFormCard, MainContainer } from '@/app/components'
+import { useGraphQLAuth } from '@/app/context/apollo-auth'
+import { useRESTAuth } from '@/app/context/auth'
 
 export default () => {
   const router = useRouter()
@@ -28,7 +28,7 @@ export default () => {
       validateInputs()
       const res = await graphQLSignIn({ email, password })
       console.warn(res)
-      router.push('/dashboard')
+      router.push('/')
     } catch (error) {
       const e = error as Error
       setError(e.message)
@@ -40,7 +40,7 @@ export default () => {
       validateInputs()
       const res = await RESTSignIn({ email, password })
       console.warn(res)
-      router.push('/dashboard')
+      router.push('/')
     } catch (error) {
       const e = error as Error
       setError(e.message)

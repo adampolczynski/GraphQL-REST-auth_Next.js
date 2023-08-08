@@ -1,6 +1,7 @@
-import React, { useState, useContext, createContext, ReactNode, Dispatch, SetStateAction } from 'react'
+import React, { useState, useContext, createContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react'
 import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, gql, NormalizedCacheObject } from '@apollo/client'
-import { LoginCredentials, User } from '../types'
+import { LoginCredentials, User } from '@/types'
+import localForage from 'localforage'
 
 const authContext = createContext<{
   authData?: User
@@ -83,15 +84,29 @@ const useProvideAuth = () => {
     console.log(result)
 
     if (result?.data?.signin?.token) {
-      setAuthData({ _id: result?.data?.signin?.user?._id, email })
+      const authData = { _id: result.data.signin.user?._id, email }
+      setAuthData(authData)
       setAuthToken(result.data.signin.token)
+      await localForage.setItem('authData', authData)
+      await localForage.setItem('token', result.data.signin.token)
     }
   }
 
-  const signOut = () => {
+  const signOut = async () => {
     setAuthData(undefined)
     setAuthToken(undefined)
+    await localForage.removeItem('authData')
+    await localForage.removeItem('token')
   }
+
+  useEffect(() => {
+    localForage.getItem<string | undefined>('token').then((storedToken) => {
+      setAuthToken(storedToken || undefined)
+      localForage.getItem<User | undefined>('authData').then((storedAuthData) => {
+        setAuthData(storedAuthData || undefined)
+      })
+    })
+  }, [])
 
   return {
     authData,

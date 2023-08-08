@@ -40,6 +40,20 @@ class FastifyServer {
 
     this.app.register(testRoutes)
     this.app.register(authRoutes, { prefix: 'auth' })
+
+    this.app.addHook('onRequest', (request, reply, done) => {
+      if (request.url.includes('auth')) {
+        done()
+      }
+
+      const { authorization: token } = request.headers as { authorization: string } // @TODO typebox?
+      try {
+        this.app.jwt.verify(token)
+        return done()
+      } catch (err) {
+        return reply.status(401).send()
+      }
+    })
   }
 
   run(port: number) {
