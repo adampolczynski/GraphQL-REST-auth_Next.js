@@ -1,4 +1,4 @@
-This is a [GraphQL & REST auth using Next.js](https://google.com)
+This is a [GraphQL vs basic REST auth using Next.js](https://google.com)
 
 ## Running locally
 

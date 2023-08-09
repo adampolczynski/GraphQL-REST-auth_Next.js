@@ -2,10 +2,9 @@ declare module 'fastify' {
   interface FastifyInstance {
     authenticate: () => void
   }
-  // interface FastifyRequest {
-  //     user: IUser
-  // }
+  interface FastifyRequest {}
   interface Session {
+    authenticated: boolean
     _id: string
     token: string
   }

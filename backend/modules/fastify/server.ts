@@ -2,9 +2,12 @@ import Fastify, { FastifyInstance } from 'fastify/fastify'
 import fastiftJwt from '@fastify/jwt'
 
 import cors from '@fastify/cors'
-import { testRoutes, authRoutes } from './routes'
+import { restrictedRoutes, authRoutes } from './routes'
 import fastifySession from '@fastify/session'
 import fastifyCookie from '@fastify/cookie'
+
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+
 class FastifyServer {
   public app: FastifyInstance
 
@@ -13,7 +16,7 @@ class FastifyServer {
       logger: {
         level: 'info',
       },
-    })
+    }).withTypeProvider<TypeBoxTypeProvider>()
   }
 
   configure() {
@@ -21,7 +24,10 @@ class FastifyServer {
       secret: process.env.AUTH_SECRET || '',
     })
     this.app.register(fastifyCookie)
-    this.app.register(fastifySession, { secret: process.env.SESSION_SECRET || '' })
+    this.app.register(fastifySession, {
+      cookieName: 'sessionId',
+      secret: process.env.SESSION_SECRET || '',
+    })
 
     this.app.register(cors, {
       origin: (origin, cb) => {
@@ -38,22 +44,8 @@ class FastifyServer {
       },
     })
 
-    this.app.register(testRoutes)
     this.app.register(authRoutes, { prefix: 'auth' })
-
-    this.app.addHook('onRequest', (request, reply, done) => {
-      if (request.url.includes('auth')) {
-        done()
-      }
-
-      const { authorization: token } = request.headers as { authorization: string } // @TODO typebox?
-      try {
-        this.app.jwt.verify(token)
-        return done()
-      } catch (err) {
-        return reply.status(401).send()
-      }
-    })
+    this.app.register(restrictedRoutes, { prefix: 'restricted' })
   }
 
   run(port: number) {

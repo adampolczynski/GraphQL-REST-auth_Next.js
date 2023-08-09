@@ -1,2 +1,2 @@
-export * from './auth'
-export * from './restricted'
+export * from './auth/auth'
+export * from './restricted/restricted'

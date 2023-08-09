@@ -40,7 +40,7 @@ export const Navbar = () => {
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
         <a className="navbar-brand" style={{ paddingLeft: '2rem' }}>
-          GraphQL & REST auth
+          GraphQL vs basic REST auth
           <span
             style={{
               fontSize: 10,
