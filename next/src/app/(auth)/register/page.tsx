@@ -44,7 +44,7 @@ export default () => {
       } else {
         setInfo('Account created, you will be redirected to log in')
         setTimeout(() => {
-          router.push('/auth/login')
+          router.push('/login')
         }, 2000)
       }
     } catch (error) {
