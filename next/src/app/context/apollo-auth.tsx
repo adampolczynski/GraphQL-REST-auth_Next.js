@@ -1,5 +1,5 @@
 import React, { useState, useContext, createContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react'
-import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, gql, NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, gql, NormalizedCacheObject, useMutation } from '@apollo/client'
 import { LoginCredentials, User } from '@/types'
 import localForage from 'localforage'
 
@@ -93,6 +93,14 @@ const useProvideAuth = () => {
   }
 
   const signOut = async () => {
+    const [mutateFunc, { data, loading, error }] = useMutation(gql`
+    mutation signout() {
+      signout() {
+        
+      }
+    }
+    `)
+    console.log(await mutateFunc())
     setAuthData(undefined)
     setAuthToken(undefined)
     await localForage.removeItem('authData')

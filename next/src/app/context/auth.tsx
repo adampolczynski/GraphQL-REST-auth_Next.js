@@ -80,6 +80,11 @@ const useProvideAuth = () => {
   }
 
   const signOut = async () => {
+    await fetch('http://localhost:4000/restricted/logout', {
+      headers: {
+        authorization: authToken || '',
+      },
+    })
     setAuthData(undefined)
     setAuthToken(undefined)
     await localForage.removeItem('authData')

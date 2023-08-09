@@ -46,6 +46,20 @@ class FastifyServer {
 
     this.app.register(authRoutes, { prefix: 'auth' })
     this.app.register(restrictedRoutes, { prefix: 'restricted' })
+
+    // auth middleware
+    this.app.addHook('onRequest', (request, reply, done) => {
+      console.log('session: ', request.sessionStore)
+      console.log('cookies: ', request.cookies)
+      if (!request.url.includes('auth')) {
+        try {
+          this.app.jwt.verify(request.headers?.authorization || '')
+          return done()
+        } catch (err) {
+          return reply.status(401).send()
+        }
+      }
+    })
   }
 
   run(port: number) {

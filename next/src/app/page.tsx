@@ -3,20 +3,29 @@
 import { gql, useQuery, useLazyQuery } from '@apollo/client'
 
 export default function Home() {
-  const GET_TASKS = gql`
-    query Tasks {
-      _id
-      title
+  const GET_USER = gql`
+    query User($_id: String!) {
+      User(_id: $_id) {
+        _id
+        email
+        createdAt
+        updatedAt
+      }
     }
   `
-  const [getTasks, { loading, error, data }] = useLazyQuery(GET_TASKS)
+  const [getUser, { loading, error, data }] = useLazyQuery(GET_USER)
 
   const callRestrictedRESTRoute = async () => {
-    return await fetch('http://localhost:4000')
+    return await fetch('http://localhost:4000/restricted')
   }
 
   const callRestrictedGraphQLQuery = async () => {
-    console.log('query', await getTasks())
+    console.log(
+      'query',
+      await getUser({
+        variables: { _id: 'asd' },
+      })
+    )
   }
 
   return (

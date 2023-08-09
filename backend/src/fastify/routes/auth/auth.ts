@@ -32,13 +32,5 @@ export const authRoutes = (fastify: FastifyInstance, opts: {}, done: () => void)
     return reply.send({})
   })
 
-  fastify.get('/logout', (request, reply) => {
-    if (request.session.authenticated) {
-      request.session.destroy()
-    } else {
-      reply.redirect('/')
-    }
-  })
-
   done()
 }

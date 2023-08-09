@@ -1,8 +1,8 @@
 import fastifyApollo from '@as-integrations/fastify'
 import mongoose from 'mongoose'
 import 'dotenv/config'
-import fastifyServer from './modules/fastify/server'
-import { apollo as apolloServer } from './modules/graphql/apollo'
+import fastifyServer from './src/fastify/server'
+import { apollo as apolloServer } from './src/graphql/apollo'
 
 const PORT = parseInt(process.env.PORT || '')
 
