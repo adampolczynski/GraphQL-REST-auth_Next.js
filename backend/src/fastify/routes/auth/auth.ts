@@ -7,13 +7,13 @@ export const authRoutes = (fastify: FastifyInstance, opts: {}, done: () => void)
     Body: AuthCredentialsType
   }>('/login', async (request, reply) => {
     const { email, password } = request.body
-    const user = await User.findOne({ email }).lean()
+    const user = await User.findOne({ email })
 
     if (!user) {
       return reply.status(401).send({ message: 'Email not found' })
     }
 
-    if (!(user as any).comparePassword(password)) {
+    if (!(await user.comparePassword(password))) {
       return reply.status(401).send({ message: 'Invalid password' })
     }
 

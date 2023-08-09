@@ -17,6 +17,16 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    methods: {
+      comparePassword: function (password: string) {
+        return new Promise((resolve, reject) =>
+          bcrypt.compare(password, this.password, (err, isMatch) => {
+            if (err) return reject(err)
+            else return resolve(isMatch)
+          })
+        )
+      },
+    },
   }
 )
 
@@ -35,12 +45,5 @@ userSchema.pre('save', function (next) {
     })
   })
 })
-
-userSchema.methods.comparePassword = function (password: string) {
-  bcrypt.compare(password, this.password, (err, isMatch) => {
-    if (err) return Promise.reject(err)
-    else return Promise.resolve(isMatch)
-  })
-}
 
 export const User = mongoose.model('User', userSchema)
