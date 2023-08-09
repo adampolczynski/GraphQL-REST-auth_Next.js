@@ -7,16 +7,20 @@ export const authRoutes = (fastify: FastifyInstance, opts: {}, done: () => void)
     Body: AuthCredentialsType
   }>('/login', async (request, reply) => {
     const { email, password } = request.body
-    const user = await User.findOne({ email, password }).lean()
+    const user = await User.findOne({ email }).lean()
 
-    if (user) {
-      const token = fastify.jwt.sign({ _id: user._id })
-
-      request.session.set('token', token)
-      return reply.send({ _id: user._id, email: user.email, token })
-    } else {
-      return reply.status(401).send({ message: 'Invalid email or password' })
+    if (!user) {
+      return reply.status(401).send({ message: 'Email not found' })
     }
+
+    if (!(user as any).comparePassword(password)) {
+      return reply.status(401).send({ message: 'Invalid password' })
+    }
+
+    const token = fastify.jwt.sign({ _id: user._id })
+
+    request.session.set('token', token)
+    return reply.send({ _id: user._id, email: user.email, token })
   })
 
   fastify.post<{
