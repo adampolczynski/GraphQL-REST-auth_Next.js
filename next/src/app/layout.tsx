@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google'
 import { Navbar } from './components/navbar'
 import { AuthProvider as GraphQLAuthProvider } from './context/graphql-auth'
 import { AuthProvider as RESTAuthProvider } from './context/basic-auth'
+import { MainContainer } from './components'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RESTAuthProvider>
           <body className={inter.className}>
             <Navbar />
-            {children}
+            <MainContainer>{children}</MainContainer>
           </body>
         </RESTAuthProvider>
       </GraphQLAuthProvider>

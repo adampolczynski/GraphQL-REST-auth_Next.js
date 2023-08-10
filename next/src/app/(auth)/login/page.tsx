@@ -51,7 +51,6 @@ export default () => {
 
   return (
     <MainContainer>
-      <h2>Login page</h2>
       {error ? <h3 style={{ color: 'orange' }}>{error}</h3> : null}
       <AuthFormCard>
         <Form.Control

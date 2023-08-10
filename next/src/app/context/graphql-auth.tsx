@@ -49,8 +49,9 @@ const useProvideAuth = () => {
   const createApolloClient = () => {
     const link = new HttpLink({
       uri: 'http://localhost:4000/graphql',
+      credentials: 'same-origin',
       headers: {
-        Cookie: `access-token=${authToken};path=/;expires=Session`,
+        cookie: `token=${authToken};path=/;expires=Session;SameSite=strict`,
       },
     })
 

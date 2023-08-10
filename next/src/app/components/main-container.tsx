@@ -6,9 +6,9 @@ export const MainContainer = ({ children }: { children: ReactNode }) => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        width: '90%',
-        margin: 'auto',
-        marginTop: '3rem',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'calc(100vh - 87px)', // 87 - headers (NavBars) height
       }}
     >
       {children}
