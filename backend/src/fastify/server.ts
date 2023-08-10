@@ -7,7 +7,6 @@ import fastifySession from '@fastify/session'
 import fastifyCookie from '@fastify/cookie'
 
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { User } from '../db/models/user'
 import { authHook } from './hooks/auth'
 
 class FastifyServer {
