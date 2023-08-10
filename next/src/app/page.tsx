@@ -2,17 +2,18 @@
 
 import { gql, useQuery, useLazyQuery } from '@apollo/client'
 
-export default function Home() {
-  const GET_USER = gql`
-    query User($_id: String!) {
-      User(_id: $_id) {
-        _id
-        email
-        createdAt
-        updatedAt
-      }
+const GET_USER = gql`
+  query User($_id: String!) {
+    User(_id: $_id) {
+      _id
+      email
+      createdAt
+      updatedAt
     }
-  `
+  }
+`
+
+export default function Home() {
   const [getUser, { loading, error, data }] = useLazyQuery(GET_USER)
 
   const callRestrictedRESTRoute = async () => {

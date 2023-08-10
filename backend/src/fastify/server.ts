@@ -46,6 +46,7 @@ class FastifyServer {
         }
         cb(new Error('Not allowed'), false)
       },
+      credentials: true,
     })
 
     this.app.register(authRoutes, { prefix: 'auth' })

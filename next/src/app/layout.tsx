@@ -4,8 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import { Inter } from 'next/font/google'
 import { Navbar } from './components/navbar'
-import { AuthProvider as GraphQLAuthProvider } from './context/apollo-auth'
-import { AuthProvider as RESTAuthProvider } from './context/auth'
+import { AuthProvider as GraphQLAuthProvider } from './context/graphql-auth'
+import { AuthProvider as RESTAuthProvider } from './context/basic-auth'
 
 const inter = Inter({ subsets: ['latin'] })
 

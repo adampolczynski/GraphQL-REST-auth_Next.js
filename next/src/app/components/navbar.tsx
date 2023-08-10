@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useGraphQLAuth } from '../context/apollo-auth'
-import { useRESTAuth } from '../context/auth'
-import { User } from '@/types'
+import { useGraphQLAuth } from '../context/graphql-auth'
+import { useRESTAuth } from '../context/basic-auth'
+import { useAuthState } from '../context/mixed-auth'
+import { Loading } from './loading'
 
 const ROUTES = {
   Main: '/',
@@ -14,11 +14,9 @@ const ROUTES = {
 }
 
 export const Navbar = () => {
-  const { authData: authDataREST, signOut: signOutREST, isSignedIn: signedInREST } = useRESTAuth()
-  const { authData: authDataGraphQL, signOut: signOutGraphQL, isSignedIn: signedInGraphQL } = useGraphQLAuth()
-
-  const [isSignedIn, setIsSignedIn] = useState<boolean>()
-  const [authData, setAuthData] = useState<User>()
+  const { loading, authData, isSignedIn } = useAuthState()
+  const { signOut: signOutREST } = useRESTAuth()
+  const { signOut: signOutGraphQL } = useGraphQLAuth()
 
   const actualPathname = usePathname()
 
@@ -30,11 +28,12 @@ export const Navbar = () => {
     signOutGraphQL && signOutGraphQL()
   }
 
-  useEffect(() => {
-    console.log(signedInREST(), signedInGraphQL(), authDataREST, authDataGraphQL)
-    setIsSignedIn(signedInREST() || signedInGraphQL())
-    setAuthData(authDataREST || authDataGraphQL)
-  }, [signedInREST, signedInGraphQL, authDataREST, authDataGraphQL])
+  if (loading)
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem' }}>
+        <Loading />
+      </div>
+    )
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -63,6 +62,9 @@ export const Navbar = () => {
         >
           {(Object.keys(ROUTES) as (keyof typeof ROUTES)[]).map((k) => {
             if (actualPathname === ROUTES[k]) {
+              return null
+            }
+            if (['/login', '/register'].includes(ROUTES[k]) && isSignedIn) {
               return null
             }
             return (

@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
 import { AuthFormCard, MainContainer } from '@/app/components'
-import { useGraphQLAuth } from '@/app/context/apollo-auth'
-import { useRESTAuth } from '@/app/context/auth'
+import { useGraphQLAuth } from '@/app/context/graphql-auth'
+import { useRESTAuth } from '@/app/context/basic-auth'
 
 export default () => {
   const router = useRouter()
@@ -26,8 +26,7 @@ export default () => {
   const loginUsingGraphQL = async () => {
     try {
       validateInputs()
-      const res = await graphQLSignIn({ email, password })
-      console.warn(res)
+      await graphQLSignIn({ email, password })
       router.push('/')
     } catch (error) {
       const e = error as Error
@@ -38,8 +37,7 @@ export default () => {
   const loginUsingREST = async () => {
     try {
       validateInputs()
-      const res = await RESTSignIn({ email, password })
-      console.warn(res)
+      await RESTSignIn({ email, password })
       router.push('/')
     } catch (error) {
       const e = error as Error

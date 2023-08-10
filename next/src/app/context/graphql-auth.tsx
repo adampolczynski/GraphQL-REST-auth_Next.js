@@ -4,6 +4,7 @@ import { LoginCredentials, User } from '@/types'
 import localForage from 'localforage'
 
 const authContext = createContext<{
+  loading: boolean
   authData?: User
   setAuthData?: Dispatch<SetStateAction<User | undefined>>
   signIn: ({ email, password }: LoginCredentials) => Promise<void>
@@ -13,6 +14,7 @@ const authContext = createContext<{
   authToken?: string
   setAuthToken?: Dispatch<SetStateAction<string | undefined>>
 }>({
+  loading: true,
   isSignedIn: () => false,
   signIn: async () => {},
 })
@@ -32,6 +34,7 @@ export const useGraphQLAuth = () => {
 }
 
 const useProvideAuth = () => {
+  const [loading, setLoading] = useState<boolean>(true)
   const [authData, setAuthData] = useState<User>()
   const [authToken, setAuthToken] = useState<string>()
 
@@ -43,18 +46,12 @@ const useProvideAuth = () => {
     }
   }
 
-  const getAuthHeaders = () => {
-    if (!authToken) return
-
-    return {
-      authorization: `Bearer ${authToken}`,
-    }
-  }
-
   const createApolloClient = () => {
     const link = new HttpLink({
       uri: 'http://localhost:4000/graphql',
-      headers: getAuthHeaders(),
+      headers: {
+        Cookie: `access-token=${authToken};path=/;expires=Session`,
+      },
     })
 
     return new ApolloClient({
@@ -108,15 +105,15 @@ const useProvideAuth = () => {
   }
 
   useEffect(() => {
-    localForage.getItem<string | undefined>('token').then((storedToken) => {
+    Promise.all([localForage.getItem<string | undefined>('token'), localForage.getItem<User | undefined>('authData')]).then(([storedToken, storedAuthData]) => {
       setAuthToken(storedToken || undefined)
-      localForage.getItem<User | undefined>('authData').then((storedAuthData) => {
-        setAuthData(storedAuthData || undefined)
-      })
+      setAuthData(storedAuthData || undefined)
+      setLoading(false)
     })
   }, [])
 
   return {
+    loading,
     authData,
     setAuthData,
     authToken,

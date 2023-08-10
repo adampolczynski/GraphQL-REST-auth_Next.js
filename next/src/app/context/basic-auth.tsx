@@ -1,8 +1,10 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from 'react'
 import { LoginCredentials, RESTLoginResponse, User } from '@/types'
 import localForage from 'localforage'
+import { request } from '@/api/request'
 
 const AuthContext = createContext<{
+  loading: boolean
   authData?: User
   setAuthData?: Dispatch<SetStateAction<User | undefined>>
   authToken?: string
@@ -11,6 +13,7 @@ const AuthContext = createContext<{
   signOut: () => void
   isSignedIn: () => boolean
 }>({
+  loading: true,
   signIn: async () => {
     return { _id: 'mock', token: 'mock', email: 'mock' }
   },
@@ -29,6 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 }
 
 const useProvideAuth = () => {
+  const [loading, setLoading] = useState<boolean>(true)
   const [authData, setAuthData] = useState<User>()
   const [authToken, setAuthToken] = useState<string>()
 
@@ -40,18 +44,10 @@ const useProvideAuth = () => {
     }
   }
 
-  const getAuthHeaders = () => {
-    if (!authToken) return
-
-    return {
-      authorization: `Bearer ${authToken}`,
-    }
-  }
-
   const signIn = async ({ email, password }: LoginCredentials) => {
     try {
       const { _id, token, message } = await (
-        await fetch('http://localhost:4000/auth/login', {
+        await request('http://localhost:4000/auth/login', {
           method: 'POST',
           body: JSON.stringify({
             email,
@@ -80,7 +76,7 @@ const useProvideAuth = () => {
   }
 
   const signOut = async () => {
-    await fetch('http://localhost:4000/restricted/logout', {
+    await request('http://localhost:4000/restricted/logout', {
       headers: {
         authorization: authToken || '',
       },
@@ -92,15 +88,15 @@ const useProvideAuth = () => {
   }
 
   useEffect(() => {
-    localForage.getItem<string | undefined>('token').then((storedToken) => {
+    Promise.all([localForage.getItem<string | undefined>('token'), localForage.getItem<User | undefined>('authData')]).then(([storedToken, storedAuthData]) => {
       setAuthToken(storedToken || undefined)
-      localForage.getItem<User | undefined>('authData').then((storedAuthData) => {
-        setAuthData(storedAuthData || undefined)
-      })
+      setAuthData(storedAuthData || undefined)
+      setLoading(false)
     })
   }, [])
 
   return {
+    loading,
     authData,
     setAuthData,
     authToken,

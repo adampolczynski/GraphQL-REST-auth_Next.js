@@ -12,7 +12,7 @@ export const restrictedRoutes = (fastify: FastifyInstance, opts: {}, done: () =>
     console.log('session: ', request.session.get('token'))
     console.log('session: ', request.session.cookie)
     console.log('cookies: ', request.cookies)
-    if (request.session.token) {
+    if (request.cookies.token) {
       request.session.destroy()
     } else {
       return reply.status(401).send()
