@@ -76,15 +76,15 @@ const useProvideAuth = () => {
   }
 
   const signOut = async () => {
-    await request('http://localhost:4000/restricted/logout', {
-      headers: {
-        authorization: authToken || '',
-      },
-    })
-    setAuthData(undefined)
-    setAuthToken(undefined)
-    await localForage.removeItem('authData')
-    await localForage.removeItem('token')
+    try {
+      await request('http://localhost:4000/restricted/logout', undefined, authToken)
+      setAuthData(undefined)
+      setAuthToken(undefined)
+      await localForage.removeItem('authData')
+      await localForage.removeItem('token')
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   useEffect(() => {

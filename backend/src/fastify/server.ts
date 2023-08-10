@@ -25,27 +25,15 @@ class FastifyServer {
     })
     this.app.register(fastifyCookie)
     this.app.register(fastifySession, {
-      cookieName: 'sessionId',
       secret: process.env.SESSION_SECRET || '',
       cookie: {
-        maxAge: 10000,
+        // maxAge: 10000,
         secure: false,
       },
     })
 
     this.app.register(cors, {
-      origin: (origin, cb) => {
-        if (!origin) {
-          cb(new Error('Not allowed - "origin" lacking'), false)
-          return
-        }
-        const hostname = new URL(origin).hostname
-        if (hostname === 'localhost') {
-          cb(null, true)
-          return
-        }
-        cb(new Error('Not allowed'), false)
-      },
+      origin: true,
       credentials: true,
     })
 
@@ -54,14 +42,12 @@ class FastifyServer {
 
     // auth middleware
     this.app.addHook('onRequest', (request, reply, done) => {
-      console.log('session: ', request.session.get('token'))
-      console.log('session: ', request.session.cookie)
-      console.log('cookies: ', request.cookies)
       if (!request.url.includes('auth')) {
         try {
-          this.app.jwt.verify(request.headers?.authorization || '')
+          this.app.jwt.verify(request.cookies.token || '')
           return done()
         } catch (err) {
+          this.app.log.error(err)
           return reply.status(401).send()
         }
       } else {

@@ -1,6 +1,8 @@
 'use client'
 
+import { request } from '@/api/request'
 import { gql, useQuery, useLazyQuery } from '@apollo/client'
+import { useAuthState } from './context/mixed-auth'
 
 const GET_USER = gql`
   query User($_id: String!) {
@@ -14,10 +16,12 @@ const GET_USER = gql`
 `
 
 export default function Home() {
+  const { isSignedIn, loading: authLoading, authToken } = useAuthState()
+
   const [getUser, { loading, error, data }] = useLazyQuery(GET_USER)
 
   const callRestrictedRESTRoute = async () => {
-    return await fetch('http://localhost:4000/restricted')
+    return await request('http://localhost:4000/restricted', undefined, authToken)
   }
 
   const callRestrictedGraphQLQuery = async () => {
@@ -40,11 +44,11 @@ export default function Home() {
         width: '30rem',
       }}
     >
-      <button onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
+      <button disabled={authLoading || !isSignedIn} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
         Call restricted REST route
       </button>
       <hr />
-      <button onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
+      <button disabled={authLoading || !isSignedIn} onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
         Restricted GraphQL query
       </button>
     </div>
