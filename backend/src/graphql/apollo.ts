@@ -47,13 +47,17 @@ const resolvers = (fastifyServer: FastifyInstance) => ({
   Mutation: {
     signin: async (_: unknown, { email, password }: LoginCredentials) => {
       try {
-        const user = await User.findOne({ email, password }).lean()
-        if (user) {
-          const token = fastifyServer.jwt.sign({ _id: user._id })
-          return { token, user: { _id: user._id, email } }
-        } else {
-          return { message: 'Invalid credentials' }
+        const user = await User.findOne({ email })
+
+        if (!user) {
+          return { message: 'Email not found' }
         }
+
+        if (!(await user.comparePassword(password))) {
+          return { message: 'Invalid password' }
+        }
+        const token = fastifyServer.jwt.sign({ _id: user._id })
+        return { token, user: { _id: user._id, email } }
       } catch (err) {
         return { message: err }
       }
@@ -67,6 +71,7 @@ const resolvers = (fastifyServer: FastifyInstance) => ({
     },
     signout: async (_: any, a: any, b: any) => {
       console.log('graphQl singout', _, a, b)
+
       return 'logged out'
     },
   },

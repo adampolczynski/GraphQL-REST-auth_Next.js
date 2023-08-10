@@ -71,8 +71,8 @@ export default () => {
             width: '30rem',
           }}
         >
-          {error ? <h2 style={{ color: 'red' }}>{`${error}`}</h2> : null}
-          {user ? <span style={{ padding: '2rem', fontWeight: 500, color: 'green' }}>{JSON.stringify(user).replaceAll(',', ', ')}</span> : null}
+          {error ? <h2 style={{ margin: '2ren', color: 'red' }}>{`${error}`}</h2> : null}
+          {user ? <span style={{ margin: '2rem', fontWeight: 500, color: 'green' }}>{JSON.stringify(user).replaceAll(',', ', ')}</span> : null}
           <button disabled={authLoading || !isSignedIn} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
             Call restricted REST route
           </button>

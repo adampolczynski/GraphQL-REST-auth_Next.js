@@ -48,7 +48,7 @@ class FastifyServer {
           const decodedJwt = this.app.jwt.decode<{ _id: string }>(request.cookies.token || '')
           const user = await User.findOne({ _id: decodedJwt?._id }).lean()
           if (user) {
-            request.user = window.structuredClone(user)
+            request.user = JSON.parse(JSON.stringify(user))
           } else {
             return reply.status(400).send({ message: 'Auth middleware problem' })
           }
