@@ -27,6 +27,10 @@ class FastifyServer {
     this.app.register(fastifySession, {
       cookieName: 'sessionId',
       secret: process.env.SESSION_SECRET || '',
+      cookie: {
+        maxAge: 10000,
+        secure: false,
+      },
     })
 
     this.app.register(cors, {
@@ -49,8 +53,9 @@ class FastifyServer {
 
     // auth middleware
     this.app.addHook('onRequest', (request, reply, done) => {
-      console.log('onRequest session: ', request.sessionStore)
-      console.log('onRequest cookies: ', request.cookies)
+      console.log('session: ', request.session.get('token'))
+      console.log('session: ', request.session.cookie)
+      console.log('cookies: ', request.cookies)
       if (!request.url.includes('auth')) {
         try {
           this.app.jwt.verify(request.headers?.authorization || '')

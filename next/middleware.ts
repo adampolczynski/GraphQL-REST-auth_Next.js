@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 export const middleware = async (request: NextRequest) => {
   const token = request.cookies.get('token')?.value
-  console.warn('next.js middleware: ', request.url)
+  console.warn('next.js middleware: ', request.url, token)
 
   if (token) {
     try {

@@ -1,3 +1,5 @@
+import { UserType } from '@fastify/jwt'
+
 declare module 'fastify' {
   interface FastifyInstance {
     authenticate: () => void
@@ -5,8 +7,8 @@ declare module 'fastify' {
   interface FastifyRequest {}
   interface Session {
     authenticated: boolean
-    _id: string
     token: string
+    user: UserType
   }
 }
 
