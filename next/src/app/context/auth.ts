@@ -1,7 +1,18 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useRESTAuth } from './basic-auth'
 import { useGraphQLAuth } from './graphql-auth'
-import { User } from '@/types'
+import { LoginCredentials, LoginResponse, User } from '@/types'
+
+export interface IAuthContext {
+  loading: boolean
+  authData?: User
+  setAuthData?: Dispatch<SetStateAction<User | undefined>>
+  signIn: ({ email, password }: LoginCredentials) => Promise<LoginResponse>
+  signOut: () => void
+  isSignedIn: () => boolean
+  authToken?: string
+  setAuthToken?: Dispatch<SetStateAction<string | undefined>>
+}
 
 export const useAuthState = () => {
   const { loading: loadingREST, authData: authDataREST, isSignedIn: signedInREST, authToken: authTokenREST } = useRESTAuth()

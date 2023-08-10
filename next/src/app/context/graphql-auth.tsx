@@ -1,22 +1,14 @@
-import React, { useState, useContext, createContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react'
-import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, gql, NormalizedCacheObject, useMutation } from '@apollo/client'
+import React, { useState, useContext, createContext, ReactNode, useEffect } from 'react'
+import { ApolloProvider, ApolloClient, InMemoryCache, HttpLink, gql, NormalizedCacheObject } from '@apollo/client'
 import { LoginCredentials, User } from '@/types'
 import localForage from 'localforage'
+import { IAuthContext } from './auth'
 
-const authContext = createContext<{
-  loading: boolean
-  authData?: User
-  setAuthData?: Dispatch<SetStateAction<User | undefined>>
-  signIn: ({ email, password }: LoginCredentials) => Promise<void>
-  signOut?: () => void
-  isSignedIn: () => boolean
-  createApolloClient?: () => ApolloClient<NormalizedCacheObject>
-  authToken?: string
-  setAuthToken?: Dispatch<SetStateAction<string | undefined>>
-}>({
+const authContext = createContext<IAuthContext & { createApolloClient?: () => ApolloClient<NormalizedCacheObject> }>({
   loading: true,
   isSignedIn: () => false,
-  signIn: async () => {},
+  signIn: async () => ({ _id: 'graphqlmock', email: 'graphqlmock', token: 'graphqlmock' }),
+  signOut: async () => {},
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -38,20 +30,13 @@ const useProvideAuth = () => {
   const [authData, setAuthData] = useState<User>()
   const [authToken, setAuthToken] = useState<string>()
 
-  const isSignedIn = () => {
-    if (authToken) {
-      return true
-    } else {
-      return false
-    }
-  }
-
   const createApolloClient = () => {
     const link = new HttpLink({
       uri: 'http://localhost:4000/graphql',
-      credentials: 'same-origin',
+      credentials: 'include',
       headers: {
-        cookie: `token=${authToken};path=/;expires=Session;SameSite=strict`,
+        'Content-Type': 'application/json',
+        cookie: `token=${authToken};path=/;SameSite=strict`,
       },
     })
 
@@ -61,8 +46,17 @@ const useProvideAuth = () => {
     })
   }
 
+  const client = createApolloClient()
+
+  const isSignedIn = () => {
+    if (authToken) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   const signIn = async ({ email, password }: LoginCredentials) => {
-    const client = createApolloClient()
     const LoginMutation = gql`
       mutation signin($email: String!, $password: String!) {
         signin(email: $email, password: $password) {
@@ -74,31 +68,42 @@ const useProvideAuth = () => {
       }
     `
 
-    const result = await client.mutate({
+    const { data } = await client.mutate({
       mutation: LoginMutation,
       variables: { email, password },
     })
 
-    console.log(result)
+    console.log(data)
 
-    if (result?.data?.signin?.token) {
-      const authData = { _id: result.data.signin.user?._id, email }
+    const token = data?.signin?.token
+
+    if (token) {
+      const authData = { _id: data.signin.user?._id, email }
       setAuthData(authData)
-      setAuthToken(result.data.signin.token)
+      setAuthToken(token)
       await localForage.setItem('authData', authData)
-      await localForage.setItem('token', result.data.signin.token)
+      await localForage.setItem('token', token)
     }
+
+    return { ...authData, token }
   }
 
   const signOut = async () => {
-    const [mutateFunc, { data, loading, error }] = useMutation(gql`
-    mutation signout() {
-      signout() {
-        
+    const SIGN_OUT_MUTATION = gql`
+      mutation signout($p: String) {
+        signout(p: $p) {
+          message
+        }
       }
+    `
+    try {
+      await client.mutate({
+        mutation: SIGN_OUT_MUTATION,
+        variables: { p: 'test' },
+      })
+    } catch (err) {
+      console.error(err)
     }
-    `)
-    console.log(await mutateFunc())
     setAuthData(undefined)
     setAuthToken(undefined)
     await localForage.removeItem('authData')

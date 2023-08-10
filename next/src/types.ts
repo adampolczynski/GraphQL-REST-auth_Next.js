@@ -3,11 +3,11 @@ export type LoginCredentials = {
   password: string
 }
 
-export type RESTLoginResponse = {
+export type LoginResponse = {
   message?: string
-  _id: string
-  token: string
-  email: string
+  _id?: string
+  token?: string
+  email?: string
 }
 
 export type User = {

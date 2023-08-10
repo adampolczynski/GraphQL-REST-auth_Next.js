@@ -1,22 +1,12 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from 'react'
-import { LoginCredentials, RESTLoginResponse, User } from '@/types'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { LoginCredentials, User } from '@/types'
 import localForage from 'localforage'
 import { request } from '@/api/request'
+import { IAuthContext } from './auth'
 
-const AuthContext = createContext<{
-  loading: boolean
-  authData?: User
-  setAuthData?: Dispatch<SetStateAction<User | undefined>>
-  authToken?: string
-  setAuthToken?: Dispatch<SetStateAction<string | undefined>>
-  signIn: ({ email, password }: LoginCredentials) => Promise<RESTLoginResponse>
-  signOut: () => void
-  isSignedIn: () => boolean
-}>({
+const AuthContext = createContext<IAuthContext>({
   loading: true,
-  signIn: async () => {
-    return { _id: 'mock', token: 'mock', email: 'mock' }
-  },
+  signIn: async () => ({ _id: 'mock', token: 'mock', email: 'mock' }),
   signOut: () => {},
   isSignedIn: () => false,
 })
@@ -77,14 +67,14 @@ const useProvideAuth = () => {
 
   const signOut = async () => {
     try {
-      await request('http://localhost:4000/restricted/logout', undefined, authToken)
-      setAuthData(undefined)
-      setAuthToken(undefined)
-      await localForage.removeItem('authData')
-      await localForage.removeItem('token')
+      await request('http://localhost:4000/restricted/logout')
     } catch (err) {
       console.error(err)
     }
+    setAuthData(undefined)
+    setAuthToken(undefined)
+    await localForage.removeItem('authData')
+    await localForage.removeItem('token')
   }
 
   useEffect(() => {

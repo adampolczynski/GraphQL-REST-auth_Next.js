@@ -7,6 +7,7 @@ import fastifySession from '@fastify/session'
 import fastifyCookie from '@fastify/cookie'
 
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { User } from '../db/models/user'
 
 class FastifyServer {
   public app: FastifyInstance
@@ -27,8 +28,8 @@ class FastifyServer {
     this.app.register(fastifySession, {
       secret: process.env.SESSION_SECRET || '',
       cookie: {
-        // maxAge: 10000,
         secure: false,
+        sameSite: 'strict',
       },
     })
 
@@ -41,17 +42,21 @@ class FastifyServer {
     this.app.register(restrictedRoutes, { prefix: 'restricted' })
 
     // auth middleware
-    this.app.addHook('onRequest', (request, reply, done) => {
+    this.app.addHook('onRequest', async (request, reply) => {
       if (!request.url.includes('auth')) {
         try {
-          this.app.jwt.verify(request.cookies.token || '')
-          return done()
+          const decodedJwt = this.app.jwt.decode<{ _id: string }>(request.cookies.token || '')
+          const user = await User.findOne({ _id: decodedJwt?._id }).lean()
+          if (user) {
+            request.user = window.structuredClone(user)
+          } else {
+            return reply.status(400).send({ message: 'Auth middleware problem' })
+          }
         } catch (err) {
           this.app.log.error(err)
           return reply.status(401).send()
         }
       } else {
-        return done()
       }
     })
   }

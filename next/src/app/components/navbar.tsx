@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useGraphQLAuth } from '../context/graphql-auth'
 import { useRESTAuth } from '../context/basic-auth'
-import { useAuthState } from '../context/mixed-auth'
+import { useAuthState } from '../context/auth'
 import { Loading } from './loading'
 
 const ROUTES = {

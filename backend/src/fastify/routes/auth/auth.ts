@@ -25,6 +25,7 @@ export const authRoutes = (fastify: FastifyInstance, opts: {}, done: () => void)
     reply.setCookie('token', token, {
       path: '/',
       httpOnly: true,
+      sameSite: 'strict',
     })
     return reply.send({ _id: user._id, email: user.email, token })
   })
