@@ -12,7 +12,7 @@ apollo
   .start()
   .then(async () => {
     fastifyServer.configure()
-    fastifyServer.app.register(fastifyApollo(apollo), { prefix: 'auth' })
+    fastifyServer.app.register(fastifyApollo(apollo))
     await fastifyServer.run(PORT)
     await mongoose.connect('mongodb://tester:test@db:27017/test')
   })
