@@ -1,6 +1,6 @@
 import fastifyApollo from '@as-integrations/fastify'
-import mongoose from 'mongoose'
 import 'dotenv/config'
+import { MongoConnectionManager } from './src/db'
 import fastifyServer from './src/fastify/server'
 import { apollo as apolloServer } from './src/graphql/apollo'
 
@@ -14,7 +14,7 @@ apollo
     fastifyServer.configure()
     fastifyServer.app.register(fastifyApollo(apollo))
     await fastifyServer.run(PORT)
-    await mongoose.connect('mongodb://tester:test@db:27017/test')
+    await MongoConnectionManager.connect()
   })
   .catch((err: Error) => {
     fastifyServer.app.log.error(err)
