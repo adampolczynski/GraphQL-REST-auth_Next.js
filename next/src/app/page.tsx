@@ -4,8 +4,8 @@ import { request } from '@/api/request'
 import { User } from '@/types'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useState } from 'react'
-import { Loading } from './components/loading'
-import { useAuthState } from './context/auth'
+import { Loading } from '../components/loading'
+import { useAuthState } from '../context/auth'
 
 const GET_USER = gql`
   query User($_id: String!) {

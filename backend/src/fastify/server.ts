@@ -22,7 +22,7 @@ class FastifyServer {
 
   configure() {
     this.app.register(fastiftJwt, {
-      secret: process.env.AUTH_SECRET || '',
+      secret: process.env.JWT_SECRET || '',
     })
     this.app.register(fastifyCookie)
     this.app.register(fastifySession, {

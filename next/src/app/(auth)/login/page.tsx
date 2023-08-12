@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
-import { AuthFormCard, MainContainer } from '@/app/components'
-import { useGraphQLAuth } from '@/app/context/graphql-auth'
-import { useRESTAuth } from '@/app/context/basic-auth'
+import { AuthFormCard, MainContainer } from '@/components'
+import { useGraphQLAuth } from '@/context/graphql-auth'
+import { useRESTAuth } from '@/context/basic-auth'
 
 export default () => {
   const router = useRouter()
