@@ -2,8 +2,7 @@ import { FastifyInstance } from 'fastify'
 
 export const restrictedRoutes = (fastify: FastifyInstance, opts: {}, done: () => void) => {
   fastify.get('/', async (request, reply) => {
-    console.log(request.user)
-    return { hello: 'world' }
+    return reply.send(request.user)
   })
 
   fastify.get('/logout', (request, reply) => {

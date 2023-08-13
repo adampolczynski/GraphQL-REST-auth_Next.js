@@ -13,7 +13,8 @@ export const authHook = async (request: FastifyRequest, reply: FastifyReply) => 
       }
     } catch (err) {
       console.error(err)
-      return reply.status(401).send()
+      const e = err as Error
+      return reply.status(401).send({ message: e.message })
     }
   }
 }

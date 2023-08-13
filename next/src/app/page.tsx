@@ -30,8 +30,12 @@ export default () => {
     setLoading(true)
     try {
       const u = await (await request('http://localhost:4000/restricted')).json()
-      setUser(u)
-      setError(undefined)
+      if (u.message) {
+        setError(u.message)
+      } else {
+        setUser(u)
+        setError(undefined)
+      }
     } catch (err) {
       setError(err)
     } finally {
@@ -76,11 +80,11 @@ export default () => {
         >
           {error ? <h2 style={{ margin: '2ren', color: 'red' }}>{`${error}`}</h2> : null}
           {user ? <span style={{ margin: '2rem', fontWeight: 500, color: 'green' }}>{JSON.stringify(user).replaceAll(',', ', ')}</span> : null}
-          <button disabled={authLoading || !authToken} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
+          <button disabled={authLoading} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
             Call restricted REST route
           </button>
           <hr />
-          <button disabled={authLoading || !authToken} onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
+          <button disabled={authLoading} onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
             Restricted GraphQL query
           </button>
         </div>
