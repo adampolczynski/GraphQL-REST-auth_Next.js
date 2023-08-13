@@ -2,9 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useGraphQLAuth } from '../context/graphql-auth'
-import { useRESTAuth } from '../context/basic-auth'
-import { useAuthState } from '../context/auth'
+import { useProvideAuth } from '../context/auth'
 import { Loading } from './loading'
 
 const ROUTES = {
@@ -14,18 +12,16 @@ const ROUTES = {
 }
 
 export const Navbar = () => {
-  const { loading, authData, isSignedIn } = useAuthState()
-  const { signOut: signOutREST } = useRESTAuth()
-  const { signOut: signOutGraphQL } = useGraphQLAuth()
+  const { loading, authData, authToken, signOut } = useProvideAuth()
 
   const actualPathname = usePathname()
 
   const signOutUsingREST = async () => {
-    signOutREST()
+    signOut('basic')
   }
 
   const signOutUsingGraphQL = () => {
-    signOutGraphQL && signOutGraphQL()
+    signOut('graphql')
   }
 
   if (loading)
@@ -51,7 +47,7 @@ export const Navbar = () => {
           </span>
           <p style={{ fontSize: 10 }}>by Adam Polczynski</p>
         </a>
-        <span>{isSignedIn ? `Hey ${authData?.email}, you're on $${actualPathname}` : `Hey guest, you're on ${actualPathname}`}</span>
+        <span>{authToken ? `Hey ${authData?.email}, you're on $${actualPathname}` : `Hey guest, you're on ${actualPathname}`}</span>
         <div
           style={{
             display: 'flex',
@@ -64,7 +60,7 @@ export const Navbar = () => {
             if (actualPathname === ROUTES[k]) {
               return null
             }
-            if (['/login', '/register'].includes(ROUTES[k]) && isSignedIn) {
+            if (['/login', '/register'].includes(ROUTES[k]) && authToken) {
               return null
             }
             return (
@@ -73,12 +69,12 @@ export const Navbar = () => {
               </Link>
             )
           })}
-          {isSignedIn && (
+          {authToken && (
             <button onClick={signOutUsingREST} type="button" className="btn btn-primary">
               Logout (REST)
             </button>
           )}
-          {isSignedIn && (
+          {authToken && (
             <button onClick={signOutUsingGraphQL} type="button" className="btn btn-primary">
               Logout (GraphQL)
             </button>

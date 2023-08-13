@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useRouter } from 'next/navigation'
 import { AuthFormCard, MainContainer } from '@/components'
-import { useGraphQLAuth } from '@/context/graphql-auth'
-import { useRESTAuth } from '@/context/basic-auth'
+import { useProvideAuth } from '@/context/auth'
 
 export default () => {
   const router = useRouter()
@@ -14,8 +13,7 @@ export default () => {
 
   const [error, setError] = useState('')
 
-  const { signIn: graphQLSignIn } = useGraphQLAuth()
-  const { signIn: RESTSignIn } = useRESTAuth()
+  const { signIn } = useProvideAuth()
 
   const validateInputs = () => {
     if (!email || !password) {
@@ -26,7 +24,7 @@ export default () => {
   const loginUsingGraphQL = async () => {
     try {
       validateInputs()
-      await graphQLSignIn({ email, password })
+      await signIn({ email, password }, 'graphql')
       router.push('/')
     } catch (error) {
       const e = error as Error
@@ -37,7 +35,7 @@ export default () => {
   const loginUsingREST = async () => {
     try {
       validateInputs()
-      await RESTSignIn({ email, password })
+      await signIn({ email, password }, 'basic')
       router.push('/')
     } catch (error) {
       const e = error as Error

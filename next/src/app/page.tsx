@@ -5,7 +5,7 @@ import { User } from '@/types'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useState } from 'react'
 import { Loading } from '../components/loading'
-import { useAuthState } from '../context/auth'
+import { useProvideAuth } from '../context/auth'
 
 const GET_USER = gql`
   query User($_id: String!) {
@@ -19,7 +19,7 @@ const GET_USER = gql`
 `
 
 export default () => {
-  const { isSignedIn, loading: authLoading, authData } = useAuthState()
+  const { authToken, loading: authLoading, authData } = useProvideAuth()
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -73,11 +73,11 @@ export default () => {
         >
           {error ? <h2 style={{ margin: '2ren', color: 'red' }}>{`${error}`}</h2> : null}
           {user ? <span style={{ margin: '2rem', fontWeight: 500, color: 'green' }}>{JSON.stringify(user).replaceAll(',', ', ')}</span> : null}
-          <button disabled={authLoading || !isSignedIn} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
+          <button disabled={authLoading || !authToken} onClick={() => callRestrictedRESTRoute()} type="button" className="btn btn-primary">
             Call restricted REST route
           </button>
           <hr />
-          <button disabled={authLoading || !isSignedIn} onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
+          <button disabled={authLoading || !authToken} onClick={() => callRestrictedGraphQLQuery()} type="button" className="btn btn-info">
             Restricted GraphQL query
           </button>
         </div>
