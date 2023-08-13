@@ -15,6 +15,7 @@ export interface IAuthContext {
   authToken?: string
   setAuthToken?: Dispatch<SetStateAction<string | undefined>>
   createApolloClient?: () => ApolloClient<NormalizedCacheObject>
+  apolloClient?: ApolloClient<NormalizedCacheObject>
 }
 
 const AuthContext = createContext<IAuthContext>({
@@ -45,11 +46,7 @@ const useAuthState = () => {
   const createApolloClient = () => {
     const link = new HttpLink({
       uri: 'http://localhost:4001/',
-      credentials: 'same-origin',
-      // headers: {
-      //   'Content-Type': 'application/json',
-      //   cookie: `token=${authToken};path=/;SameSite=strict`,
-      // },
+      credentials: 'include',
     })
 
     return new ApolloClient({
@@ -173,8 +170,9 @@ const useAuthState = () => {
     setAuthData,
     authToken,
     setAuthToken,
-    createApolloClient,
     signIn,
     signOut,
+    createApolloClient,
+    apolloClient: client,
   }
 }

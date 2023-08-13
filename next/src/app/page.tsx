@@ -2,12 +2,12 @@
 
 import { request } from '@/api/request'
 import { User } from '@/types'
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { Loading } from '../components/loading'
 import { useProvideAuth } from '../context/auth'
 
-const GET_USER = gql`
+const GET_USER_MUTATION = gql`
   query User($_id: String!) {
     User(_id: $_id) {
       _id
@@ -19,14 +19,12 @@ const GET_USER = gql`
 `
 
 export default () => {
-  const { authToken, loading: authLoading, authData } = useProvideAuth()
+  const { authToken, loading: authLoading, authData, apolloClient } = useProvideAuth()
 
   const [loading, setLoading] = useState<boolean>(false)
 
   const [error, setError] = useState<Error | unknown>()
   const [user, setUser] = useState<User>()
-
-  const [getUser] = useLazyQuery(GET_USER)
 
   const callRestrictedRESTRoute = async () => {
     setLoading(true)
@@ -44,7 +42,12 @@ export default () => {
   const callRestrictedGraphQLQuery = async () => {
     setLoading(true)
     try {
-      const { data } = await getUser({
+      if (!apolloClient) {
+        console.error('refactor apollo client')
+        return
+      }
+      const { data } = await apolloClient.mutate({
+        mutation: GET_USER_MUTATION,
         variables: { _id: authData?._id },
       })
       setUser(data)
