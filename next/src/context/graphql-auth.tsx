@@ -32,12 +32,12 @@ const useProvideAuth = () => {
 
   const createApolloClient = () => {
     const link = new HttpLink({
-      uri: 'http://localhost:4000/graphql',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        cookie: `token=${authToken};path=/;SameSite=strict`,
-      },
+      uri: 'http://localhost:4001/',
+      credentials: 'same-origin',
+      // headers: {
+      //   'Content-Type': 'application/json',
+      //   cookie: `token=${authToken};path=/;SameSite=strict`,
+      // },
     })
 
     return new ApolloClient({
