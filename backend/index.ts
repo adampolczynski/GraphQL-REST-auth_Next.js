@@ -9,9 +9,10 @@ const GRAPHQL_PORT = parseInt(process.env.APOLLO_PORT || '')
 FastifyAppManager.createApp()
 FastifyAppManager.configure()
 FastifyAppManager.run(FASTIFY_PORT)
-  .then(async () => {
-    const { url } = await startApolloServer(GRAPHQL_PORT)
-    console.log(`Apollo server started at ${url}`)
+  .then(async (fUrl) => {
+    console.log(`Fastify server started at ${fUrl}`)
+    const { url: aUrl } = await startApolloServer(GRAPHQL_PORT)
+    console.log(`Apollo server started at ${aUrl}`)
     await MongoConnectionManager.connect()
     console.log(`Connected with database`)
   })
