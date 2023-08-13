@@ -9,8 +9,10 @@ type LoginCredentials = {
 
 export const resolvers = {
   Query: {
-    User: async (_: unknown, { _id }: { _id: string }, { authToken }: IContext) => {
-      console.log('graphQL User query token: ', authToken)
+    Profile: async (_: unknown, p: undefined, { userId }: IContext) => {
+      return await User.findOne({ _id: userId }).lean()
+    },
+    User: async (_: unknown, { _id }: { _id: string }) => {
       return await User.findOne({ _id }).lean()
     },
   },
@@ -43,10 +45,10 @@ export const resolvers = {
         return { message: err }
       }
     },
-    signout: async (_: any, a: any, { res }: IContext) => {
+    signout: async (_: unknown, p: undefined, { res }: IContext) => {
       res.setHeader('Set-Cookie', 'token=rubbish;expires=Thu, Jan 01 1970 00:00:00 UTC;')
       res.setHeader('Set-Cookie', 'sessionId=rubbish;expires=Thu, Jan 01 1970 00:00:00 UTC;')
-      return 'logged out'
+      return res
     },
   },
 }

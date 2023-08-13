@@ -4,14 +4,14 @@ import localForage from 'localforage'
 import { request } from '@/api/request'
 import { ApolloClient, ApolloProvider, gql, HttpLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client'
 
-type AuthMethods = 'basic' | 'graphql'
+type AuthMethod = 'basic' | 'graphql'
 
 export interface IAuthContext {
   loading?: boolean
   authData?: User
   setAuthData?: Dispatch<SetStateAction<User | undefined>>
-  signIn: ({ email, password }: LoginCredentials, method: AuthMethods) => Promise<LoginResponse>
-  signOut: (method: AuthMethods) => void
+  signIn: ({ email, password }: LoginCredentials, method: AuthMethod) => Promise<LoginResponse>
+  signOut: (method: AuthMethod) => void
   authToken?: string
   setAuthToken?: Dispatch<SetStateAction<string | undefined>>
   createApolloClient?: () => ApolloClient<NormalizedCacheObject>
@@ -57,7 +57,7 @@ const useAuthState = () => {
 
   const client = createApolloClient()
 
-  const signIn = async ({ email, password }: LoginCredentials, method: AuthMethods) => {
+  const signIn = async ({ email, password }: LoginCredentials, method: AuthMethod) => {
     try {
       let _id, token, message
       switch (method) {
@@ -119,7 +119,7 @@ const useAuthState = () => {
     }
   }
 
-  const signOut = async (method: AuthMethods) => {
+  const signOut = async (method: AuthMethod) => {
     switch (method) {
       case 'basic':
         try {

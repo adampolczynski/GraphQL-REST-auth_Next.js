@@ -18,6 +18,7 @@ type User {
   updatedAt: String!
 }
 type Query {
+  Profile: User!
   User(_id: String!): User!
 }
 type Mutation {

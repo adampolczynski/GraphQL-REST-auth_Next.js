@@ -7,9 +7,9 @@ import { useState } from 'react'
 import { Loading } from '../components/loading'
 import { useProvideAuth } from '../context/auth'
 
-const GET_USER_MUTATION = gql`
-  query User($_id: String!) {
-    User(_id: $_id) {
+const GET_PROFILE_QUERY = gql`
+  query Profile {
+    Profile {
       _id
       email
       createdAt
@@ -50,9 +50,8 @@ export default () => {
         console.error('refactor apollo client')
         return
       }
-      const { data } = await apolloClient.mutate({
-        mutation: GET_USER_MUTATION,
-        variables: { _id: authData?._id },
+      const { data } = await apolloClient.query({
+        query: GET_PROFILE_QUERY,
       })
       setUser(data)
       setError(undefined)
