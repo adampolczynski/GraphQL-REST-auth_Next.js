@@ -1,43 +1,12 @@
-import { ApolloServer } from '@apollo/server'
-import { fastifyApolloDrainPlugin } from '@as-integrations/fastify'
 import { FastifyInstance } from 'fastify'
-import { User } from '../db/models/user'
+import { User } from '../../db/models/user'
 
 type LoginCredentials = {
   email: string
   password: string
 }
 
-const typeDefs = `#graphql
-  type SignInResponse {
-    token: String
-    message: String
-    user: User
-  }
-  type SignUpResponse {
-    message: String
-  }
-  type SignOutResponse {
-    message: String
-  }
-  type User {
-    _id: String!
-    email: String!
-    password: String!
-    createdAt: String!
-    updatedAt: String!
-  }
-  type Query {
-    User(_id: String!): User!
-  }
-  type Mutation {
-    signin(email: String!, password: String!): SignInResponse!
-    signup(email: String!, password: String!): SignUpResponse!
-    signout(p: String): SignOutResponse!
-  }
-`
-
-const resolvers = (fastifyServer: FastifyInstance) => ({
+export const resolvers = {
   Query: {
     User: async (_: unknown, { _id }: { _id: string }, context: unknown) => {
       console.log('graphQL User query context: ', _, _id, context)
@@ -56,7 +25,7 @@ const resolvers = (fastifyServer: FastifyInstance) => ({
         if (!(await user.comparePassword(password))) {
           return { message: 'Invalid password' }
         }
-        const token = fastifyServer.jwt.sign({ _id: user._id })
+        const token = '' // fastifyServer.jwt.sign({ _id: user._id })
         return { token, user: { _id: user._id, email } }
       } catch (err) {
         return { message: err }
@@ -75,12 +44,4 @@ const resolvers = (fastifyServer: FastifyInstance) => ({
       return 'logged out'
     },
   },
-})
-
-export const apollo = (fastifyServer: FastifyInstance) => {
-  return new ApolloServer({
-    typeDefs,
-    resolvers: resolvers(fastifyServer),
-    plugins: [fastifyApolloDrainPlugin(fastifyServer)],
-  })
 }

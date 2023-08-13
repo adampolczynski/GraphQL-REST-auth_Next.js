@@ -9,10 +9,24 @@ import fastifyCookie from '@fastify/cookie'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { authHook } from './hooks/auth'
 
-class FastifyServer {
-  public app: FastifyInstance
+function StaticImplements<T>() {
+  return <U extends T>(constructor: U) => {
+    constructor
+  }
+}
 
-  constructor() {
+interface IFastifyAppManager {
+  createApp(): void
+  getApp: () => FastifyInstance
+  configure: () => void
+  run: (port: number) => Promise<string>
+}
+
+@StaticImplements<IFastifyAppManager>()
+export class FastifyAppManager {
+  private static app: FastifyInstance
+
+  static createApp() {
     this.app = Fastify({
       logger: {
         level: 'info',
@@ -20,7 +34,11 @@ class FastifyServer {
     }).withTypeProvider<TypeBoxTypeProvider>()
   }
 
-  configure() {
+  static getApp() {
+    return this.app
+  }
+
+  static configure() {
     this.app.register(fastiftJwt, {
       secret: process.env.JWT_SECRET || '',
     })
@@ -45,9 +63,7 @@ class FastifyServer {
     this.app.addHook('onRequest', authHook)
   }
 
-  run(port: number) {
+  static run(port: number) {
     return this.app.listen({ host: '0.0.0.0', port })
   }
 }
-
-export default new FastifyServer()

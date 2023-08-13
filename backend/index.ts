@@ -1,22 +1,21 @@
-import fastifyApollo from '@as-integrations/fastify'
 import 'dotenv/config'
 import { MongoConnectionManager } from './src/db'
-import fastifyServer from './src/fastify/server'
-import { apollo as apolloServer } from './src/graphql/apollo'
+import { FastifyAppManager } from './src/fastify/server'
+import { startApolloServer } from './src/graphql/server'
 
-const PORT = parseInt(process.env.PORT || '')
+const FASTIFY_PORT = parseInt(process.env.FASTIFY_PORT || '')
+const GRAPHQL_PORT = parseInt(process.env.APOLLO_PORT || '')
 
-const apollo = apolloServer(fastifyServer.app)
-
-apollo
-  .start()
+FastifyAppManager.createApp()
+FastifyAppManager.configure()
+FastifyAppManager.run(FASTIFY_PORT)
   .then(async () => {
-    fastifyServer.configure()
-    fastifyServer.app.register(fastifyApollo(apollo))
-    await fastifyServer.run(PORT)
+    const { url } = await startApolloServer(GRAPHQL_PORT)
+    console.log(`Apollo server started at ${url}`)
     await MongoConnectionManager.connect()
+    console.log(`Connected with database`)
   })
   .catch((err: Error) => {
-    fastifyServer.app.log.error(err)
+    console.error(err)
     process.exit(1)
   })
